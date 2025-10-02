@@ -18,7 +18,7 @@ PATCHES_RELEASE_URL = 'https://git.naijun.dev/api/v1/repos/revanced/revanced-pat
 def check_java_environment() -> None:
     if which('java') is None:
         raise EnvironmentError("Java is not installed or not found in PATH.")
-    result = subprocess.run(['java', '-version'], capture_output=True, text=True)
+    result = subprocess.run(['java', '-version'], capture_output=True, text=True, encoding='utf-8', errors='replace')
     if result.returncode != 0:
         raise EnvironmentError("Java is not installed or not found in PATH.")
     output = (result.stdout or result.stderr or "").strip()
@@ -119,7 +119,7 @@ def run_cli_list_patches(cli_jar: str, rvp_path: str,
         cmd.append('--with-options')
     cmd.append(rvp_path)
     print(f"[INFO] Listing patches via CLI:\n{' '.join(cmd)}")
-    proc = subprocess.run(cmd, capture_output=True, text=True)
+    proc = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace')
     if proc.returncode != 0:
         err = (proc.stderr or '').strip()
         out = (proc.stdout or '').strip()
@@ -648,6 +648,13 @@ def main():
 
     if args.run:
         print("[RUN] Executing patch command...")
+        if sys.platform == 'win32':
+            try:
+                import ctypes
+                kernel32 = ctypes.windll.kernel32
+                kernel32.SetConsoleOutputCP(65001)  # UTF-8
+            except:
+                pass
         proc = subprocess.run(cmd)
         if proc.returncode == 0:
             print(f"[DONE] Patched APK saved at: {patched_out}")
