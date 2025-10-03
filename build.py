@@ -22,7 +22,35 @@ def check_java_environment() -> None:
     if result.returncode != 0:
         raise EnvironmentError("Java is not installed or not found in PATH.")
     output = (result.stdout or result.stderr or "").strip()
-    print(f"[OK] Java detected:\n{output}")
+
+    major_version = None
+    # Regex to find version string like "1.8.0_341" or "17.0.5"
+    match = re.search(r'version "([^"]+)"', output)
+    if match:
+        version_str = match.group(1)
+        parts = version_str.split('.')
+        if parts[0] == '1':
+            # Legacy version format: 1.x.y... -> major is x
+            if len(parts) > 1:
+                major_version = int(parts[1])
+        else:
+            # Modern version format: xx.y.z... -> major is xx
+            major_version_str_match = re.match(r'\d+', parts[0])
+            if major_version_str_match:
+                major_version = int(major_version_str_match.group(0))
+
+    if major_version is None:
+        raise EnvironmentError(f"Could not parse Java version from output:\n{output}")
+
+    print(f"[OK] Java detected (version {major_version}):\n{output}")
+
+    if not (17 <= major_version < 25):
+        raise EnvironmentError(
+            f"Unsupported Java version: {major_version}. "
+            "Please use a Java version that is >= 17 and < 25."
+        )
+    
+    print(f"[OK] Java version {major_version} is supported.")
 
 
 def get_latest_release(url: str):
@@ -658,11 +686,15 @@ def main():
         proc = subprocess.run(cmd)
         if proc.returncode == 0:
             print(f"[DONE] Patched APK saved at: {patched_out}")
+            print("\n[INFO] Join the ReVanced Build discussion Telegram channel:")
+            print("       https://t.me/+JyRqyGqfHc81MTU1")
         else:
             print(f"[ERR] Patch command failed with exit code {proc.returncode}")
             sys.exit(proc.returncode)
     else:
         print("\n[INFO] Not executed. Re-run with --run to execute the command.")
+        print("\n[INFO] Join the ReVanced Build discussion Telegram channel:")
+        print("       https://t.me/+JyRqyGqfHc81MTU1")
 
 
 if __name__ == "__main__":
