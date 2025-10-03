@@ -17,7 +17,11 @@ This is a guide to set up a Termux environment for building.
    git clone https://git.naijun.dev/ReVanced/revanced-build-script.git
    cd revanced-build-script
     ```
-5. You must prepare the APK file to be patched in advance.
+5. Install required Python packages:
+   ```sh
+   pip install -r requirements.txt
+   ```
+6. You must prepare the APK file to be patched in advance.
 
 ## Building
 1. Run the build script:
