@@ -568,6 +568,10 @@ def prompt_options_for_selected(selected_ids: List[Tuple[str, object]], entries:
 def build_patch_command(cli_jar: str, rvp_path: str, apk_path: str,
                         out_apk: str, exclusive: bool,
                         selected_with_opts: List[Dict],
+                        keystore_path: Optional[str] = None,
+                        keystore_pass: Optional[str] = None,
+                        key_alias: Optional[str] = None,
+                        key_pass: Optional[str] = None,
                         extra_args: Optional[List[str]] = None):
     """
     Build the revanced-cli patch command.
@@ -589,6 +593,16 @@ def build_patch_command(cli_jar: str, rvp_path: str, apk_path: str,
             else:
                 cmd.append(f"-O{k}={v}")
 
+    # Add signing options if provided
+    if keystore_path:
+        cmd.extend(['--keystore', keystore_path])
+    if keystore_pass:
+        cmd.extend(['--keystore-password', keystore_pass])
+    if key_alias:
+        cmd.extend(['--key-alias', key_alias])
+    if key_pass:
+        cmd.extend(['--key-password', key_pass])
+
     if extra_args:
         cmd.extend(extra_args)
     cmd.extend(['-o', out_apk, apk_path])
@@ -604,6 +618,10 @@ def main():
     parser.add_argument('--exclusive', dest='exclusive', action='store_true', default=True, help='Only enable selected patches (default: on)')
     parser.add_argument('--no-exclusive', dest='exclusive', action='store_false', help='Do not use --exclusive')
     parser.add_argument('--run', action='store_true', help='Actually run the patch command (otherwise only print it)')
+    parser.add_argument('--keystore', type=str, help='Path to your keystore file for signing.')
+    parser.add_argument('--keystore-password', type=str, help='Password for the keystore.')
+    parser.add_argument('--key-alias', type=str, help='Alias of the key to use for signing.')
+    parser.add_argument('--key-password', type=str, help='Password for the key alias.')
     args = parser.parse_args()
 
     try:
@@ -668,6 +686,10 @@ def main():
         out_apk=patched_out,
         exclusive=args.exclusive,
         selected_with_opts=selected_with_opts,
+        keystore_path=args.keystore,
+        keystore_pass=args.keystore_password,
+        key_alias=args.key_alias,
+        key_pass=args.key_password,
         extra_args=None
     )
 
