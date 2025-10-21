@@ -599,9 +599,9 @@ def build_patch_command(cli_jar: str, rvp_path: str, apk_path: str,
     if keystore_pass:
         cmd.extend(['--keystore-password', keystore_pass])
     if key_alias:
-        cmd.extend(['--key-alias', key_alias])
+        cmd.extend(['--keystore-entry-alias', key_alias])
     if key_pass:
-        cmd.extend(['--key-password', key_pass])
+        cmd.extend(['--keystore-entry-password', key_pass])
 
     if extra_args:
         cmd.extend(extra_args)
