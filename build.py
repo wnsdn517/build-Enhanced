@@ -11,16 +11,32 @@ import subprocess
 from shutil import which
 from typing import List, Dict, Tuple, Optional
 
-CLI_RELEASE_URL = 'https://git.naijun.dev/api/v1/repos/revanced/revanced-cli/releases/latest'
-PATCHES_RELEASE_URL = 'https://git.naijun.dev/api/v1/repos/revanced/revanced-patches-releases/releases/latest'
+CLI_RELEASE_URL = 'https://api.github.com/repos/AmpleReVanced/revanced-cli/releases/latest'
+PATCHES_RELEASE_URL = 'https://api.github.com/repos/AmpleReVanced/revanced-patches/releases/latest'
+
+# Helpful guidance for users when Java checks fail. Recommend Azul Zulu (OpenJDK builds).
+ZULU_INSTALL_GUIDANCE = (
+    "Recommended: install Azul Zulu (OpenJDK builds) or another OpenJDK 17+ distribution:\n"
+    "  - Azul Zulu downloads: https://www.azul.com/downloads/?package=jdk\n"
+    "  - Install examples (may require adding Azul repos per distro):\n"
+    "      Debian/Ubuntu: sudo apt update && sudo apt install -y openjdk-17-jdk\n"
+    "      Fedora: sudo dnf install -y java-17-openjdk-devel\n"
+    "      Arch: sudo pacman -Syu jdk-openjdk\n"
+    "  - For Azul Zulu packages and platform-specific instructions, see: https://www.azul.com/downloads/\n"
+    "After installing, ensure the 'java' command is available on your PATH or set JAVA_HOME to the JDK location."
+)
 
 
 def check_java_environment() -> None:
     if which('java') is None:
-        raise EnvironmentError("Java is not installed or not found in PATH.")
+        raise EnvironmentError(
+            "Java is not installed or not found in PATH.\n" + ZULU_INSTALL_GUIDANCE
+        )
     result = subprocess.run(['java', '-version'], capture_output=True, text=True, encoding='utf-8', errors='replace')
     if result.returncode != 0:
-        raise EnvironmentError("Java is not installed or not found in PATH.")
+        raise EnvironmentError(
+            "Failed to execute 'java -version' (return code != 0).\n" + ZULU_INSTALL_GUIDANCE
+        )
     output = (result.stdout or result.stderr or "").strip()
 
     major_version = None
@@ -40,14 +56,16 @@ def check_java_environment() -> None:
                 major_version = int(major_version_str_match.group(0))
 
     if major_version is None:
-        raise EnvironmentError(f"Could not parse Java version from output:\n{output}")
+        raise EnvironmentError(
+            f"Could not parse Java version from output:\n{output}\n" + ZULU_INSTALL_GUIDANCE
+        )
 
     print(f"[OK] Java detected (version {major_version}):\n{output}")
 
     if not (17 <= major_version < 25):
         raise EnvironmentError(
-            f"Unsupported Java version: {major_version}. "
-            "Please use a Java version that is >= 17 and < 25."
+            f"Unsupported Java version: {major_version}. Please use a Java version that is >= 17 and < 25.\n"
+            + ZULU_INSTALL_GUIDANCE
         )
     
     print(f"[OK] Java version {major_version} is supported.")

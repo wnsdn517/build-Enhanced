@@ -16,7 +16,7 @@ This led to builds not working smoothly in the Android Manager app. To resolve t
 
 Install Python deps:
 ```bash
-pip install -U requests questionary
+pip install -r requirements.txt
 ```
 
 ## Quick Start
