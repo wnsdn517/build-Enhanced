@@ -726,16 +726,11 @@ def main():
         proc = subprocess.run(cmd)
         if proc.returncode == 0:
             print(f"[DONE] Patched APK saved at: {patched_out}")
-            print("\n[INFO] Join the ReVanced Build discussion Telegram channel:")
-            print("       https://t.me/+JyRqyGqfHc81MTU1")
         else:
             print(f"[ERR] Patch command failed with exit code {proc.returncode}")
             sys.exit(proc.returncode)
     else:
         print("\n[INFO] Not executed. Re-run with --run to execute the command.")
-        print("\n[INFO] Join the ReVanced Build discussion Telegram channel:")
-        print("       https://t.me/+JyRqyGqfHc81MTU1")
-
 
 if __name__ == "__main__":
     main()
