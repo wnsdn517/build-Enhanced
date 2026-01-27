@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Cache
+.cache/
+cache/
+
+# Downloads / outputs
+downloads/
+download/
+output/
+out/
+dist/
+build/
+
+# APK / artifacts
+*.apk
+*.apkm
+*.jar
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Virtual env
+.venv/
+venv/
+env/
